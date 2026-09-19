@@ -51,6 +51,17 @@ export default function Register() {
         }
     }
 
+    /*=======================
+        Clearing inputs function
+        ========================*/
+
+    function clearInputs() {
+        setName("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+    }
+
     return (
         <Body>
             <div className="w-full h-full flex justify-center items-center">
@@ -95,7 +106,10 @@ export default function Register() {
         ===================*/}
 
                     <div className="w-full flex justify-between p-2 ">
-                        <ButtonSecondary className="w-[40%]">
+                        <ButtonSecondary
+                            onClick={clearInputs}
+                            className="w-[40%]"
+                        >
                             Cancel
                         </ButtonSecondary>
                         <ButtonPrimary

@@ -11,24 +11,40 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const passwordMismatch = useRef(null);
 
+    {
+        /*===================
+        Submiting functions
+        ===================*/
+    }
     function submitInputs() {
         const User = JSON.parse(localStorage.getItem("User"));
-        console.log(User);
-        console.log(email);
-        console.log(password);
+
         if (
             User.password === password &&
             password !== "" &&
             email !== "" &&
             User.email === email
         ) {
-            //window.location = "/dashboard";
+            passwordMismatch.current.classList.add("hidden");
             setEmail("");
             setPassword("");
+            window.location = "/dashboard";
         } else {
             passwordMismatch.current.classList.remove("hidden");
         }
     }
+
+    {
+        /*=======================
+        Clearing inputs function
+        ========================*/
+    }
+
+    function clearInputs() {
+        setEmail("");
+        setPassword("");
+    }
+
     return (
         <Body>
             <div className="w-full h-full flex flex-col justify-center items-center">
@@ -61,7 +77,10 @@ export default function Login() {
         Buttons 
         ===================*/}
                     <div className="w-full flex justify-between">
-                        <ButtonSecondary className="w-[40%]">
+                        <ButtonSecondary
+                            onClick={clearInputs}
+                            className="w-[40%]"
+                        >
                             Cancel
                         </ButtonSecondary>
                         <ButtonPrimary
@@ -70,6 +89,20 @@ export default function Login() {
                         >
                             Submit
                         </ButtonPrimary>
+                    </div>
+
+                    {/*
+        Login optiom 
+        ===================*/}
+
+                    <div className="flex gap-3">
+                        Dont have an account?{" "}
+                        <Link
+                            className="text-indigo-500 underline"
+                            to="/register"
+                        >
+                            Register
+                        </Link>
                     </div>
                 </div>
             </div>
