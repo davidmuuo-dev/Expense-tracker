@@ -95,7 +95,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex justify-center items-center">
-                        <div className="h-full p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%] p-2 ">
+                        <div className="h-full p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%]  ">
                             <p className="text-gray-900 text-xl text-medi">
                                 {User.name}
                             </p>
@@ -104,7 +104,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex justify-center items-center">
-                        <div className="h-full p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%] p-2 ">
+                        <div className="h-full p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%]  ">
                         <p>Today:34.56k</p>
                         <p>Week:34.56k</p>
                         <p>Month:34.56k</p>
