@@ -69,10 +69,10 @@ export default function Dashboard() {
           sidebar section
           =======================*/}
                 <div className=" h-[10%] ">
-                    <div className="relative w-fit bg-gray-100 rounded-2xl  px-5 py-1">
+                    <button className="relative w-fit bg-gray-200 m-2 rounded-2xl  px-5 py-1">
                         Add
                         <MdAddCircleOutline className="absolute top-1 right-1" />
-                    </div>
+                    </button>
                 </div>
 
                 {/*====================
@@ -80,7 +80,7 @@ export default function Dashboard() {
           =======================*/}
                 <div className=" grow gap-4 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
                     <div className="flex justify-center items-center">
-                        <div className="p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%] justify-center items-center  gap-3 ">
+                        <div className="h-full p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%] justify-center items-center  gap-3 ">
                             <p>Add a transaction</p>
                             <DashboardInput placeholder="Enter  the transaction" />
                             <DashboardInput placeholder="Amount spend" />
@@ -95,7 +95,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex justify-center items-center">
-                        <div className="p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%] p-2 ">
+                        <div className="h-full p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%] p-2 ">
                             <p className="text-gray-900 text-xl text-medi">
                                 {User.name}
                             </p>
@@ -103,8 +103,12 @@ export default function Dashboard() {
                             <p>Total Expenditure: 234k</p>
                         </div>
                     </div>
-                    <div className="p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 ">
-                        C
+                    <div className="flex justify-center items-center">
+                        <div className="h-full p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%] p-2 ">
+                        <p>Today:34.56k</p>
+                        <p>Week:34.56k</p>
+                        <p>Month:34.56k</p>
+                    </div>
                     </div>
                 </div>
             </main>
