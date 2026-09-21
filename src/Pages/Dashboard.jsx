@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Input from "../Components/Input";
 import DashboardInput from "../Components/DashboardInput";
 import { IoMenuSharp } from "react-icons/io5";
@@ -20,6 +20,7 @@ export default function Dashboard() {
     const [expenseName, setExpenseName] = useState("");
     const [expensePrice, setExpensePrice] = useState("");
     const User = JSON.parse(localStorage.getItem("User"));
+    const Transactions = JSON.parse(localStorage.getItem("Expenses")) || [];
 
     function onSeeMenu() {
         dropMenu.current.classList.toggle("hidden");
@@ -42,20 +43,66 @@ export default function Dashboard() {
     }
 
     class Expense {
-        constructor(name, price, date) {
+        constructor(name, price) {
             this.name = name;
             this.price = price;
-            this.date = new Date();
+            this.date = Date.now();
+            this.id = crypto.randomUUID();
         }
     }
 
     function addExpense() {
         if (expenseName !== "" && expensePrice !== "") {
-            console.log(expenseName, expensePrice);
+            const existingExpenses =
+                JSON.parse(localStorage.getItem("Expenses")) || [];
+            const expenses = [...existingExpenses];
+            let newExpense = new Expense(expenseName, expensePrice);
+            expenses.unshift(newExpense);
+            localStorage.setItem("Expenses", JSON.stringify(expenses));
+            setExpenseName("");
+            setExpensePrice("");
+            addTransactionForm.current.classList.remove("flex");
+            addTransactionForm.current.classList.add("hidden");
         } else {
             warning.current.classList.remove("hidden");
         }
     }
+
+    {
+        /*====================================
+          CALCULATING TODAYS EXPENSE 
+          =======================================*/
+    }
+
+    const todayExpenses = Transactions.filter(transaction => {
+        const expenseDate = new Date(transaction.date);
+        const today = new Date(Date.now());
+
+        return expenseDate.toLocaleDateString() === today.toLocaleDateString();
+    });
+
+    const prices = [];
+    todayExpenses.map(entry => {
+        return prices.push(Number(entry.price));
+    });
+    const todayTotal = prices.reduce((a, b) => a + b);
+
+    {
+        /*====================================
+          CALCULATING WEEKLY EXPENSE 
+          =======================================*/
+    }
+    let weekStart = new Date(Date.now());
+    let weekDay = weekStart.getDay();
+    let daysRemaining = 7 - Number(weekDay);
+    const endDate = weekStart.getDate() + daysRemaining;
+    let weekEnd = new Date(weekStart);
+    weekEnd.setDate(endDate);
+    console.log(weekStart.toDateString());
+    console.log(weekDay);
+    console.log(daysRemaining);
+    console.log(endDate);
+    console.log(weekEnd.toDateString());
 
     return (
         <div className="h-dvh w-dvw">
@@ -179,10 +226,10 @@ export default function Dashboard() {
                     <div className="flex justify-center items-center">
                         <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-300 flex flex-col w-[80%]  ">
                             <p className="text-sm text-gray-400">
-                                Today:{" "}
+                                Today: Kshs.
                                 <strong className="text-gray-950">
-                                    34.56k
-                                </strong>{" "}
+                                    {todayTotal.toFixed(2)}
+                                </strong>
                             </p>
                             <p className="text-sm text-gray-400">
                                 Weekly:{" "}
@@ -202,20 +249,29 @@ export default function Dashboard() {
                 {/*====================
           Transactions  section
           =======================*/}
-                <div className="w-[80%] max-w-150 m-auto flex flex-col mt-30 ">
+                <div className="w-[80%] max-w-150 m-auto flex flex-col mt-30 gap-5 ">
                     <p className="font-medium text-lg font-sans">
                         Your Transactions
                     </p>
-                    <div className="flex bg-gray-200 p-2 rounded-lg justify-between items-center">
-                        <div>
-                            <p>Fruits</p>
-                            <p>50.00</p>
-                        </div>
-                        <div>
-                            <p>27/8/2026</p>
-                            <p>Expense</p>
-                        </div>
-                    </div>
+
+                    {Transactions.map(entry => {
+                        const date = new Date(entry.date);
+                        return (
+                            <div
+                                key={entry.id}
+                                className=" flex bg-gray-100 p-2 rounded-lg justify-between items-center"
+                            >
+                                <div>
+                                    <p>{entry.name}</p>
+                                    <p>{entry.price}</p>
+                                </div>
+                                <div>
+                                    <p>{date.toLocaleDateString()}</p>
+                                    <p>{date.toLocaleTimeString()}</p>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </main>
         </div>
