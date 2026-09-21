@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Input from "../Components/Input";
 import DashboardInput from "../Components/DashboardInput";
 import { IoMenuSharp } from "react-icons/io5";
@@ -15,11 +15,48 @@ import ButtonSecondary from "../Components/ButtonSecondary";
 
 export default function Dashboard() {
     const dropMenu = useRef(null);
+    const addTransactionForm = useRef(null);
+    const warning = useRef(null);
+    const [expenseName, setExpenseName] = useState("");
+    const [expensePrice, setExpensePrice] = useState("");
     const User = JSON.parse(localStorage.getItem("User"));
 
     function onSeeMenu() {
         dropMenu.current.classList.toggle("hidden");
     }
+
+    function handleShowAddTransactionForm() {
+        addTransactionForm.current.classList.add("flex");
+        addTransactionForm.current.classList.remove("hidden");
+    }
+
+    function handleCloseAddTransactionForm() {
+        addTransactionForm.current.classList.remove("flex");
+        addTransactionForm.current.classList.add("hidden");
+    }
+
+    {
+        /*====================
+          EXPENSES CLASS OBJECT
+          =======================*/
+    }
+
+    class Expense {
+        constructor(name, price, date) {
+            this.name = name;
+            this.price = price;
+            this.date = new Date();
+        }
+    }
+
+    function addExpense() {
+        if (expenseName !== "" && expensePrice !== "") {
+            console.log(expenseName, expensePrice);
+        } else {
+            warning.current.classList.remove("hidden");
+        }
+    }
+
     return (
         <div className="h-dvh w-dvw">
             {/*====================
@@ -69,7 +106,10 @@ export default function Dashboard() {
           sidebar section
           =======================*/}
                 <div className=" h-[10%] ">
-                    <button className="relative w-fit bg-gray-200 m-2 rounded-2xl  px-5 py-1">
+                    <button
+                        onClick={handleShowAddTransactionForm}
+                        className="md:hidden relative w-fit bg-gray-200 m-2 rounded-2xl  px-5 py-1"
+                    >
                         Add
                         <MdAddCircleOutline className="absolute top-1 right-1" />
                     </button>
@@ -78,37 +118,103 @@ export default function Dashboard() {
                 {/*====================
           Main side section
           =======================*/}
-                <div className=" grow gap-4 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
-                    <div className="flex justify-center items-center">
-                        <div className="h-full p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%] justify-center items-center  gap-3 ">
+                <div className=" grow gap-20 md:gap-5 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
+                    <div
+                        ref={addTransactionForm}
+                        className="hidden md:flex justify-center items-center"
+                    >
+                        <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-300 flex flex-col w-[80%] justify-center items-center  gap-3 ">
                             <p>Add a transaction</p>
-                            <DashboardInput placeholder="Enter  the transaction" />
-                            <DashboardInput placeholder="Amount spend" />
+                            <p
+                                ref={warning}
+                                className="text-red-500 font-medium text-sm hidden"
+                            >
+                                You must enter something on both fields
+                            </p>
+                            <DashboardInput
+                                onChange={e => setExpenseName(e.target.value)}
+                                value={expenseName}
+                                placeholder="Enter  the transaction"
+                                type="text"
+                            />
+                            <DashboardInput
+                                value={expensePrice}
+                                onChange={e => setExpensePrice(e.target.value)}
+                                placeholder="Amount spend"
+                                type="number"
+                            />
                             <div className="w-[80%] flex justify-between ">
-                                <ButtonSecondary className="bg-sky-300 w-[40%]  ">
+                                <ButtonSecondary
+                                    onClick={handleCloseAddTransactionForm}
+                                    className="bg-sky-300 w-[40%]  "
+                                >
                                     Cancel
                                 </ButtonSecondary>
-                                <ButtonPrimary className="w-[40%]">
+                                <ButtonPrimary
+                                    onClick={addExpense}
+                                    className="w-[40%]"
+                                >
                                     Add
                                 </ButtonPrimary>
                             </div>
                         </div>
                     </div>
                     <div className="flex justify-center items-center">
-                        <div className="h-full p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%]  ">
-                            <p className="text-gray-900 text-xl text-medi">
-                                {User.name}
+                        <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-200 flex flex-col w-[80%]  ">
+                            <p className="text-gray-900 text-xl font-medium">
+                                Welcome back {User.name}!
                             </p>
-                            <p className="text-lg ">Balance: 234k</p>
-                            <p>Total Expenditure: 234k</p>
+                            <p className="text-sm text-gray-400 ">
+                                Balance:{" "}
+                                <strong className="text-gray-950">
+                                    234k
+                                </strong>{" "}
+                            </p>
+                            <p className="text-sm text-gray-400 ">
+                                Total Expenditure:{" "}
+                                <strong className="text-gray-950">234k</strong>
+                            </p>
                         </div>
                     </div>
                     <div className="flex justify-center items-center">
-                        <div className="h-full p-2 mt-5 shadow-2xl rounded-lg shadow-gray-500 flex flex-col w-[80%]  ">
-                        <p>Today:34.56k</p>
-                        <p>Week:34.56k</p>
-                        <p>Month:34.56k</p>
+                        <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-300 flex flex-col w-[80%]  ">
+                            <p className="text-sm text-gray-400">
+                                Today:{" "}
+                                <strong className="text-gray-950">
+                                    34.56k
+                                </strong>{" "}
+                            </p>
+                            <p className="text-sm text-gray-400">
+                                Weekly:{" "}
+                                <strong className="text-gray-950">
+                                    34.56k
+                                </strong>{" "}
+                            </p>
+                            <p className="text-sm text-gray-400">
+                                Monthly:{" "}
+                                <strong className="text-gray-950">
+                                    34.56k
+                                </strong>{" "}
+                            </p>
+                        </div>
                     </div>
+                </div>
+                {/*====================
+          Transactions  section
+          =======================*/}
+                <div className="w-[80%] max-w-150 m-auto flex flex-col mt-30 ">
+                    <p className="font-medium text-lg font-sans">
+                        Your Transactions
+                    </p>
+                    <div className="flex bg-gray-200 p-2 rounded-lg justify-between items-center">
+                        <div>
+                            <p>Fruits</p>
+                            <p>50.00</p>
+                        </div>
+                        <div>
+                            <p>27/8/2026</p>
+                            <p>Expense</p>
+                        </div>
                     </div>
                 </div>
             </main>

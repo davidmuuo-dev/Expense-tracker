@@ -37,7 +37,7 @@ export default function HomePage() {
             {/*Footer*/}
             <div className="h-[5%] w-full ">
                 <Link to="/register" className="w-full flex justify-center">
-                    <ButtonSecondary className="w-[90%] ">
+                    <ButtonSecondary className="w-[90%] max-w-100 ">
                         Start for free
                     </ButtonSecondary>
                 </Link>
