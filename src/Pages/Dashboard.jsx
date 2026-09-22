@@ -21,8 +21,10 @@ export default function Dashboard() {
     const [expensePrice, setExpensePrice] = useState("");
     const [income, setIncome] = useState("");
     const User = JSON.parse(localStorage.getItem("User"));
-
-    const Transactions = JSON.parse(localStorage.getItem("Expenses")) || [];
+    const [Transactions, setTransactions] = useState(
+        JSON.parse(localStorage.getItem("Expenses")) || []
+    );
+    const userIncome = JSON.parse(localStorage.getItem("Income")) || [];
 
     function onSeeMenu() {
         dropMenu.current.classList.toggle("hidden");
@@ -61,6 +63,7 @@ export default function Dashboard() {
             let newExpense = new Expense(expenseName, expensePrice);
             expenses.unshift(newExpense);
             localStorage.setItem("Expenses", JSON.stringify(expenses));
+            setTransactions(JSON.parse(localStorage.getItem("Expenses")));
             setExpenseName("");
             setExpensePrice("");
             addTransactionForm.current.classList.remove("flex");
@@ -146,13 +149,12 @@ export default function Dashboard() {
         /*====================
           INCOME CLASS OBJECT
           =======================*/
-
-        class Income {
-            constructor(amount, date) {
-                this.amount = amount;
-                this.date = Date.now();
-                this.id = crypto.randomUUID();
-            }
+    }
+    class Income {
+        constructor(amount, date) {
+            this.amount = amount;
+            this.date = Date.now();
+            this.id = crypto.randomUUID();
         }
     }
 
@@ -167,14 +169,17 @@ export default function Dashboard() {
             const existingIncome =
                 JSON.parse(localStorage.getItem("Income")) || [];
             const newIncome = [...existingIncome];
-            newIncome.push(Number(income));
+            let addIncome = new Income(Number(income));
+            newIncome.push(addIncome);
             localStorage.setItem("Income", JSON.stringify(newIncome));
             setIncome("");
         }
     }
 
     const incomeList = JSON.parse(localStorage.getItem("Income")) || [];
-    const totalIncome = incomeList.reduce((a, b) => a + b, 0);
+    const totalIncome = incomeList.reduce((a, b) => {
+        return a + b.amount;
+    }, 0);
 
     function handleShowAddIncome() {
         addIncome.current.classList.add("block");
@@ -186,12 +191,34 @@ export default function Dashboard() {
         addIncome.current.classList.add("hidden");
         addIncome.current.classList.remove("block");
     }
+
+    {
+        /*====================
+          EXPENSE DELETING FUNCTION
+          =======================*/
+    }
+
+    function deleteTransaction(id) {
+        let newExpenses = Transactions.filter(entry => entry.id !== id);
+        setTransactions(newExpenses);
+    }
+
+    {
+        /*====================
+          LOGOUT
+          =======================*/
+    }
+
+    function logout() {
+        window.location = "/";
+    }
+
     return (
         <div className="h-dvh w-dvw">
             {/*====================
           Header section
           =======================*/}
-            <header className="relative w-full  p-2  md:flex  md:justify-between  border-2 border-gray-300 ">
+            <header className="relative w-full  p-2  md:flex  md:justify-between md:border-0 border-2 border-gray-300 ">
                 <div className="flex gap-3 items-center  grow md:grow-0 md:w-[50%] ">
                     <p className="text-center text-lg font-semibold">LOGO</p>
                     <div className="p-1 bg-black/10 rounded-lg  md:grow-0 grow flex items-center">
@@ -206,7 +233,7 @@ export default function Dashboard() {
                 </div>
                 <div
                     ref={dropMenu}
-                    className="absolute z-10 top-12 md:static right-0 md:grow md:flex p-2 hidden md:visible border-2 border-black/30 rounded-md justify-self-end w-[50%] md:gap-4 shadow-2xl md:shadow-none md:border-0 shadow-black/50 "
+                    className="absolute z-10 top-12 md:static right-0 md:grow-0.5 md:flex p-2 hidden md:visible border-2 border-black/30 rounded-md justify-self-end w-[50%] md:gap-4 shadow-2xl md:shadow-none md:border-0 shadow-black/50 "
                 >
                     <div className="bg-gray-100 p-2 rounded-sm flex gap-2 items-center">
                         <FaRegUserCircle className="text-3xl fill-gray-400" />
@@ -214,13 +241,20 @@ export default function Dashboard() {
                     </div>
                     <div className="bg-gray-100 text-xl font-medium mt-2 p-2 rounded-sm flex gap-2 items-center">
                         <PiMoneyWavyDuotone />
-                        123k
+                        Kshs.{" "}
+                        <strong className="text-green-500">
+                            {" "}
+                            {totalIncome}
+                        </strong>
                     </div>
                     <div className="bg-gray-100 p-2 mt-2 rounded-sm flex gap-2 items-center">
                         <IoSettingsOutline className="text-3xl fill-gray-400" />
                         Settings
                     </div>
-                    <div className="bg-gray-100 p-2 mt-2 rounded-sm flex gap-2 items-center text-red-500">
+                    <div
+                        onClick={logout}
+                        className="bg-gray-100 p-2 mt-2 rounded-sm flex gap-2 items-center text-red-500"
+                    >
                         <IoIosLogOut className="text-3xl fill-red-500" />
                         Logout
                     </div>
@@ -304,19 +338,19 @@ export default function Dashboard() {
                             <div className="flex flex-col gap-4 md:gap-2 mt-4 md:mt-2">
                                 <p className="text-sm text-gray-400 ">
                                     Total Income: Kshs.
-                                    <strong className="text-gray-950">
+                                    <strong className="text-green-500">
                                         {totalIncome.toFixed(2)}
                                     </strong>{" "}
                                 </p>
                                 <p className="text-sm text-gray-400 ">
                                     Balance: Kshs.
-                                    <strong className="text-gray-950">
+                                    <strong className="text-green-500">
                                         {(totalIncome - allTotal).toFixed(2)}
                                     </strong>{" "}
                                 </p>
                                 <p className="text-sm text-gray-400 ">
                                     Total Expenditure: Kshs.
-                                    <strong className="text-gray-950">
+                                    <strong className="text-red-500">
                                         {allTotal.toFixed(2)}
                                     </strong>
                                 </p>
@@ -332,53 +366,83 @@ export default function Dashboard() {
                     </div>
                     <div className="flex justify-center items-center">
                         <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-300 flex flex-col w-[80%]  ">
-                            <p className="text-sm text-gray-400">
-                                Today: Kshs.
-                                <strong className="text-gray-950">
-                                    {todayTotal.toFixed(2)}
-                                </strong>
+                            <p className="font-medium font-gray-950 mb-3">
+                                Expenses Summary
                             </p>
-                            <p className="text-sm text-gray-400">
-                                Weekly: Kshs.{" "}
-                                <strong className="text-gray-950">
-                                    {weektotal.toFixed(2)}
-                                </strong>{" "}
-                            </p>
-                            <p className="text-sm text-gray-400">
-                                Monthly:{" "}
-                                <strong className="text-gray-950">
-                                    {monthTotal.toFixed(2)}
-                                </strong>{" "}
-                            </p>
+                            <div className="  font-light flex flex-col gap-3">
+                                <p className="text-sm text-gray-400">
+                                    Today: Kshs.
+                                    <strong className="text-red-400">
+                                        {todayTotal.toFixed(2)}
+                                    </strong>
+                                </p>
+                                <p className="text-sm text-gray-400">
+                                    Weekly: Kshs.{" "}
+                                    <strong className="text-red-400">
+                                        {weektotal.toFixed(2)}
+                                    </strong>{" "}
+                                </p>
+                                <p className="text-sm text-gray-400">
+                                    Monthly:{" "}
+                                    <strong className="text-red-400">
+                                        {monthTotal.toFixed(2)}
+                                    </strong>{" "}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
                 {/*====================
           Transactions  section
           =======================*/}
-                <div className="w-[80%] max-w-150 m-auto flex flex-col mt-30 gap-5 ">
+                <div className="w-[80%] max-w-150 m-auto flex flex-col mt-30 gap-1  ">
                     <p className="font-medium text-lg font-sans">
                         Your Transactions
                     </p>
+                    <p className="font-medium text-sm font-sans">Expenses</p>
 
                     {Transactions.map(entry => {
                         const date = new Date(entry.date);
                         return (
                             <div
+                                onClick={() => deleteTransaction(entry.id)}
                                 key={entry.id}
                                 className=" flex bg-gray-100 p-2 rounded-lg justify-between items-center"
                             >
                                 <div>
                                     <p>{entry.name}</p>
-                                    <p>{Number(entry.price).toFixed(2)}</p>
+                                    <p className="text-red-500 font-light">
+                                        {" "}
+                                        -{Number(entry.price).toFixed(2)}
+                                    </p>
                                 </div>
-                                <div>
+                                <div className=" text-sm">
                                     <p>{date.toLocaleDateString()}</p>
                                     <p>{date.toLocaleTimeString()}</p>
                                 </div>
                             </div>
                         );
                     })}
+                    <p className="font-medium text-sm font-sans">Incomes</p>
+                    <div>
+                        {incomeList.map(entry => {
+                            let date = new Date(entry.date);
+                            return (
+                                <div
+                                    className="m-1 flex bg-gray-100 p-2 rounded-lg justify-between items-center"
+                                    key={entry.id}
+                                >
+                                    <p className="text-3xl text-green-500 font-black">
+                                        +{entry.amount}
+                                    </p>
+                                    <div className="text-sm">
+                                        <p>{date.toLocaleDateString()}</p>
+                                        <p>{date.toLocaleTimeString()}</p>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </main>
         </div>
