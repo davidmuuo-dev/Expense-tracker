@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
 import DashboardInput from "../Components/DashboardInput";
 import { IoMenuSharp } from "react-icons/io5";
-import { FaSearch } from "react-icons/fa";
+
 import { FaRegUserCircle } from "react-icons/fa";
-import { IoEnterOutline } from "react-icons/io5";
+
 import { PiMoneyWavyDuotone } from "react-icons/pi";
 import { IoIosLogOut } from "react-icons/io";
-import { IoSettingsOutline } from "react-icons/io5";
+
 import { MdAddCircleOutline } from "react-icons/md";
 import ButtonPrimary from "../Components/ButtonPrimary";
 import ButtonSecondary from "../Components/ButtonSecondary";
@@ -24,7 +24,6 @@ export default function Dashboard() {
   const [Transactions, setTransactions] = useState(
     JSON.parse(localStorage.getItem("Expenses")) || [],
   );
-  const userIncome = JSON.parse(localStorage.getItem("Income")) || [];
 
   function onSeeMenu() {
     dropMenu.current.classList.toggle("hidden");
@@ -151,7 +150,7 @@ export default function Dashboard() {
           =======================*/
   }
   class Income {
-    constructor(amount, date) {
+    constructor(amount) {
       this.amount = amount;
       this.date = Date.now();
       this.id = crypto.randomUUID();
@@ -217,24 +216,18 @@ export default function Dashboard() {
       {/*====================
           Header section
           =======================*/}
-      <header className="relative w-full  p-2  md:flex  md:justify-between md:border-0 border-2 border-gray-300 ">
-        <div className="flex gap-3 items-center  grow md:grow-0 md:w-[50%] ">
+      <header className="relative w-full p-2  bg-sky-200 md:flex  md:justify-between md:items-center md:px-10 md:py-3">
+        <div className="flex gap-3 items-center   md:grow-0 md:w-[50%] ">
           <p className="text-center text-lg font-semibold">LOGO</p>
-          <div className="p-1 bg-black/10 rounded-lg  md:grow-0 grow flex items-center">
-            <FaSearch className="text-xl font-light" />
-            <input className="grow  md:grow-0 outline-none     " />
-            <IoEnterOutline className="text-2xl" />
-          </div>
-
           <button onClick={onSeeMenu} className="md:hidden">
             <IoMenuSharp className=" text-2xl" />
           </button>
         </div>
         <div
           ref={dropMenu}
-          className="absolute z-10 top-12 md:static right-0 md:grow-0.5 md:flex p-2 hidden md:visible border-2 border-black/30 rounded-md justify-self-end w-[50%] md:gap-4 shadow-2xl md:shadow-none md:border-0 shadow-black/50 "
+          className="absolute z-10 top-12 md:static right-0 md:grow md:flex p-2 hidden md:visible border-2 border-black/30 rounded-md justify-self-end w-[50%] md:gap-4 shadow-2xl md:shadow-none md:border-0 shadow-black/50 items-center "
         >
-          <div className="bg-gray-100 p-2 rounded-sm flex gap-2 items-center">
+          <div className="bg-gray-100 p-2 h-fit rounded-sm flex gap-2 items-center">
             <FaRegUserCircle className="text-3xl fill-gray-400" />
             {User.name}
           </div>
@@ -242,10 +235,7 @@ export default function Dashboard() {
             <PiMoneyWavyDuotone />
             Kshs. <strong className="text-green-500"> {totalIncome}</strong>
           </div>
-          <div className="bg-gray-100 p-2 mt-2 rounded-sm flex gap-2 items-center">
-            <IoSettingsOutline className="text-3xl fill-gray-400" />
-            Settings
-          </div>
+
           <div
             onClick={logout}
             className="bg-gray-100 p-2 mt-2 rounded-sm flex gap-2 items-center text-red-500"
