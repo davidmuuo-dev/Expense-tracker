@@ -1,428 +1,219 @@
 import { useRef, useState } from "react";
 import DashboardInput from "../Components/DashboardInput";
-import { IoMenuSharp } from "react-icons/io5";
 
-import { FaRegUserCircle } from "react-icons/fa";
-
-import { PiMoneyWavyDuotone } from "react-icons/pi";
-import { IoIosLogOut } from "react-icons/io";
-
-import { MdAddCircleOutline } from "react-icons/md";
 import ButtonPrimary from "../Components/ButtonPrimary";
 import ButtonSecondary from "../Components/ButtonSecondary";
 import IncomeInput from "../Components/IncomeInput";
+import Header from "../Components/Header";
+import Sidebar from "../Components/Sidebar";
+import ExpenseSummary from "../Components/ExpenseSummary";
+import TransactionsComponent from "../Components/TransactionsComponent";
 
 export default function Dashboard() {
-  const dropMenu = useRef(null);
-  const addTransactionForm = useRef(null);
-  const warning = useRef(null);
-  const addIncome = useRef(null);
-  const [expenseName, setExpenseName] = useState("");
-  const [expensePrice, setExpensePrice] = useState("");
-  const [income, setIncome] = useState("");
-  const User = JSON.parse(localStorage.getItem("User"));
-  const [Transactions, setTransactions] = useState(
-    JSON.parse(localStorage.getItem("Expenses")) || [],
-  );
+    const addTransactionForm = useRef(null);
+    const warning = useRef(null);
+    const addIncome = useRef(null);
+    const [expenseName, setExpenseName] = useState("");
+    const [expensePrice, setExpensePrice] = useState("");
+    const [income, setIncome] = useState("");
+    const User = JSON.parse(localStorage.getItem("User"));
+    const [Transactions, setTransactions] = useState(
+        JSON.parse(localStorage.getItem("Expenses")) || []
+    );
 
-  function onSeeMenu() {
-    dropMenu.current.classList.toggle("hidden");
-  }
-
-  function handleShowAddTransactionForm() {
-    addTransactionForm.current.classList.add("flex");
-    addTransactionForm.current.classList.remove("hidden");
-  }
-
-  function handleCloseAddTransactionForm() {
-    addTransactionForm.current.classList.remove("flex");
-    addTransactionForm.current.classList.add("hidden");
-  }
-
-  {
-    /*====================
+    {
+        /*====================
           EXPENSES CLASS OBJECT
           =======================*/
-  }
-
-  class Expense {
-    constructor(name, price) {
-      this.name = name;
-      this.price = price;
-      this.date = Date.now();
-      this.id = crypto.randomUUID();
     }
-  }
 
-  function addExpense() {
-    if (expenseName !== "" && expensePrice !== "") {
-      const existingExpenses =
-        JSON.parse(localStorage.getItem("Expenses")) || [];
-      const expenses = [...existingExpenses];
-      let newExpense = new Expense(expenseName, expensePrice);
-      expenses.unshift(newExpense);
-      localStorage.setItem("Expenses", JSON.stringify(expenses));
-      setTransactions(JSON.parse(localStorage.getItem("Expenses")));
-      setExpenseName("");
-      setExpensePrice("");
-      addTransactionForm.current.classList.remove("flex");
-      addTransactionForm.current.classList.add("hidden");
-    } else {
-      warning.current.classList.remove("hidden");
+    class Expense {
+        constructor(name, price) {
+            this.name = name;
+            this.price = price;
+            this.date = Date.now();
+            this.id = crypto.randomUUID();
+        }
     }
-  }
 
-  {
-    /*====================================
-          CALCULATING TODAYS EXPENSE 
-          =======================================*/
-  }
+    function addExpense() {
+        if (expenseName !== "" && expensePrice !== "") {
+            const existingExpenses =
+                JSON.parse(localStorage.getItem("Expenses")) || [];
+            const expenses = [...existingExpenses];
+            let newExpense = new Expense(expenseName, expensePrice);
+            expenses.unshift(newExpense);
+            localStorage.setItem("Expenses", JSON.stringify(expenses));
+            setTransactions(JSON.parse(localStorage.getItem("Expenses")));
+            setExpenseName("");
+            setExpensePrice("");
+            addTransactionForm.current.classList.remove("flex");
+            addTransactionForm.current.classList.add("hidden");
+        } else {
+            warning.current.classList.remove("hidden");
+        }
+    }
 
-  const todayExpenses = Transactions.filter((transaction) => {
-    const expenseDate = new Date(transaction.date);
-    const today = new Date(Date.now());
+    function handleCloseAddTransactionForm() {
+        addTransactionForm.current.classList.remove("flex");
+        addTransactionForm.current.classList.add("hidden");
+    }
 
-    return expenseDate.toLocaleDateString() === today.toLocaleDateString();
-  });
-
-  const prices = [];
-  todayExpenses.map((entry) => {
-    return prices.push(Number(entry.price));
-  });
-  const todayTotal = prices.reduce((a, b) => a + b, 0);
-
-  {
-    /*====================================
-          CALCULATING WEEKLY EXPENSE 
-          =======================================*/
-  }
-  let weekStart = new Date();
-  let weekDay = weekStart.getDay();
-  weekStart.setDate(weekStart.getDate() - weekDay);
-  weekStart.setHours(0, 0, 0, 0);
-  let weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekEnd.getDate() + 6);
-  weekEnd.setHours(23, 59, 59, 999);
-  const weekTransactions = Transactions.filter((entry) => {
-    const expenseDate = new Date(entry.date);
-    return expenseDate >= weekStart && expenseDate <= weekEnd;
-  });
-  const weekPrices = [];
-  weekTransactions.forEach((entry) => {
-    weekPrices.push(Number(entry.price));
-  });
-  const weektotal = weekPrices.reduce((a, b) => a + b, 0);
-
-  /*====================================
-          CALCULATING MONTHLY EXPENSE 
-          =======================================*/
-
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
-
-  const monthEnd = new Date(monthStart);
-  monthEnd.setMonth(monthEnd.getMonth() + 1);
-
-  const monthTransactions = Transactions.filter((entry) => {
-    const expenseDate = new Date(entry.date);
-
-    return expenseDate >= monthStart && expenseDate < monthEnd;
-  });
-
-  const monthTotal = monthTransactions.reduce(
-    (total, entry) => total + Number(entry.price),
-    0,
-  );
-
-  {
-    /*====================
+    {
+        /*====================
           CALCULATING TOTAL EXPENSE
           =======================*/
-  }
-  const totalExpenditure = [];
-  Transactions.map((entry) => totalExpenditure.push(Number(entry.price)));
-  const allTotal = totalExpenditure.reduce((a, b) => a + b, 0);
+    }
+    const totalExpenditure = [];
+    Transactions.map(entry => totalExpenditure.push(Number(entry.price)));
+    const allTotal = totalExpenditure.reduce((a, b) => a + b, 0);
 
-  {
-    /*====================
+    {
+        /*====================
           INCOME CLASS OBJECT
           =======================*/
-  }
-  class Income {
-    constructor(amount) {
-      this.amount = amount;
-      this.date = Date.now();
-      this.id = crypto.randomUUID();
     }
-  }
+    class Income {
+        constructor(amount) {
+            this.amount = amount;
+            this.date = Date.now();
+            this.id = crypto.randomUUID();
+        }
+    }
 
-  {
-    /*====================
+    {
+        /*====================
           INCOME HANDLING FUNCTION
           =======================*/
-  }
-
-  function handleIncome() {
-    if (income !== "") {
-      const existingIncome = JSON.parse(localStorage.getItem("Income")) || [];
-      const newIncome = [...existingIncome];
-      let addIncome = new Income(Number(income));
-      newIncome.push(addIncome);
-      localStorage.setItem("Income", JSON.stringify(newIncome));
-      setIncome("");
     }
-  }
 
-  const incomeList = JSON.parse(localStorage.getItem("Income")) || [];
-  const totalIncome = incomeList.reduce((a, b) => {
-    return a + b.amount;
-  }, 0);
+    function handleIncome() {
+        if (income !== "") {
+            const existingIncome =
+                JSON.parse(localStorage.getItem("Income")) || [];
+            const newIncome = [...existingIncome];
+            let addIncome = new Income(Number(income));
+            newIncome.push(addIncome);
+            localStorage.setItem("Income", JSON.stringify(newIncome));
+            setIncome("");
+        }
+    }
 
-  function handleShowAddIncome() {
-    addIncome.current.classList.add("block");
-    addIncome.current.classList.remove("hidden");
-  }
+    const incomeList = JSON.parse(localStorage.getItem("Income")) || [];
+    const totalIncome = incomeList.reduce((a, b) => {
+        return a + b.amount;
+    }, 0);
 
-  function handleCloseAddIncome() {
-    setIncome("");
-    addIncome.current.classList.add("hidden");
-    addIncome.current.classList.remove("block");
-  }
+    function handleCloseAddIncome() {
+        setIncome("");
+        addIncome.current.classList.add("hidden");
+        addIncome.current.classList.remove("block");
+    }
 
-  {
-    /*====================
-          EXPENSE DELETING FUNCTION
-          =======================*/
-  }
-
-  function deleteTransaction(id) {
-    let newExpenses = Transactions.filter((entry) => entry.id !== id);
-    setTransactions(newExpenses);
-  }
-
-  {
-    /*====================
-          LOGOUT
-          =======================*/
-  }
-
-  function logout() {
-    window.location = "/";
-  }
-
-  return (
-    <div className="h-dvh w-dvw">
-      {/*====================
-          Header section
-          =======================*/}
-      <header className="relative w-full p-2  bg-sky-200 md:flex  md:justify-between md:items-center md:px-10 md:py-3">
-        <div className="flex gap-3 items-center   md:grow-0 md:w-[50%] ">
-          <p className="text-center text-lg font-semibold">LOGO</p>
-          <button onClick={onSeeMenu} className="md:hidden">
-            <IoMenuSharp className=" text-2xl" />
-          </button>
-        </div>
-        <div
-          ref={dropMenu}
-          className="absolute z-10 top-12 md:static right-0 md:grow md:flex p-2 hidden md:visible border-2 border-black/30 rounded-md justify-self-end w-[50%] md:gap-4 shadow-2xl md:shadow-none md:border-0 shadow-black/50 items-center "
-        >
-          <div className="bg-gray-100 p-2 h-fit rounded-sm flex gap-2 items-center">
-            <FaRegUserCircle className="text-3xl fill-gray-400" />
-            {User.name}
-          </div>
-          <div className="bg-gray-100 text-xl font-medium mt-2 p-2 rounded-sm flex gap-2 items-center">
-            <PiMoneyWavyDuotone />
-            Kshs. <strong className="text-green-500"> {totalIncome}</strong>
-          </div>
-
-          <div
-            onClick={logout}
-            className="bg-gray-100 p-2 mt-2 rounded-sm flex gap-2 items-center text-red-500"
-          >
-            <IoIosLogOut className="text-3xl fill-red-500" />
-            Logout
-          </div>
-        </div>
-      </header>
-
-      {/*====================
+    return (
+        <div className="h-dvh w-dvw">
+            <Header User={User} totalIncome={totalIncome} />
+            {/*====================
           Main section
           =======================*/}
-      <main className="flex flex-col">
-        {/*====================
+            <main className="flex flex-col">
+                {/*====================
           sidebar section
           =======================*/}
-        <div className=" h-[10%] ">
-          <button
-            onClick={handleShowAddTransactionForm}
-            className="md:hidden relative w-fit bg-gray-200 m-2 rounded-2xl  px-5 py-1"
-          >
-            Add Expense
-            <MdAddCircleOutline className="absolute top-1 right-1" />
-          </button>
-          <button
-            onClick={handleShowAddIncome}
-            className="md:hidden relative w-fit bg-gray-200 m-2 rounded-2xl  px-5 py-1"
-          >
-            Add Income
-            <MdAddCircleOutline className="absolute top-1 right-1" />
-          </button>
-        </div>
-
-        {/*====================
+                <Sidebar
+                    addIncome={addIncome}
+                    addTransactionForm={addTransactionForm}
+                />
+                {/*====================
           Main side section
           =======================*/}
-        <div className="relative grow gap-20 md:gap-5 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
-          <div
-            ref={addTransactionForm}
-            className="hidden md:flex justify-center items-center"
-          >
-            <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-300 flex flex-col w-[80%] justify-center items-center  gap-3 ">
-              <p>Add a transaction</p>
-              <p
-                ref={warning}
-                className="text-red-500 font-medium text-sm hidden"
-              >
-                You must enter something on both fields
-              </p>
-              <DashboardInput
-                onChange={(e) => setExpenseName(e.target.value)}
-                value={expenseName}
-                placeholder="Enter  the transaction"
-                type="text"
-              />
-              <DashboardInput
-                value={expensePrice}
-                onChange={(e) => setExpensePrice(e.target.value)}
-                placeholder="Amount spend"
-                type="number"
-              />
-              <div className="w-[80%] flex justify-between ">
-                <ButtonSecondary
-                  onClick={handleCloseAddTransactionForm}
-                  className="bg-sky-300 w-[40%]  "
-                >
-                  Cancel
-                </ButtonSecondary>
-                <ButtonPrimary onClick={addExpense} className="w-[40%]">
-                  Add
-                </ButtonPrimary>
-              </div>
-            </div>
-          </div>
+                <div className="relative grow gap-20 md:gap-5 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
+                    <div
+                        ref={addTransactionForm}
+                        className="hidden md:flex justify-center items-center"
+                    >
+                        <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-300 flex flex-col w-[80%] justify-center items-center  gap-3 ">
+                            <p>Add a transaction</p>
+                            <p
+                                ref={warning}
+                                className="text-red-500 font-medium text-sm hidden"
+                            >
+                                You must enter something on both fields
+                            </p>
+                            <DashboardInput
+                                onChange={e => setExpenseName(e.target.value)}
+                                value={expenseName}
+                                placeholder="Enter  the transaction"
+                                type="text"
+                            />
+                            <DashboardInput
+                                value={expensePrice}
+                                onChange={e => setExpensePrice(e.target.value)}
+                                placeholder="Amount spend"
+                                type="number"
+                            />
+                            <div className="w-[80%] flex justify-between ">
+                                <ButtonSecondary
+                                    onClick={handleCloseAddTransactionForm}
+                                    className="bg-sky-300 w-[40%]  "
+                                >
+                                    Cancel
+                                </ButtonSecondary>
+                                <ButtonPrimary
+                                    onClick={addExpense}
+                                    className="w-[40%]"
+                                >
+                                    Add
+                                </ButtonPrimary>
+                            </div>
+                        </div>
+                    </div>
 
-          <div className="flex justify-center items-center">
-            <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-200 flex flex-col w-[80%]  ">
-              <p className="text-gray-900 text-xl font-medium">
-                Welcome back {User.name}!
-              </p>
-              <div className="flex flex-col gap-4 md:gap-2 mt-4 md:mt-2">
-                <p className="text-sm text-gray-400 ">
-                  Total Income: Kshs.
-                  <strong className="text-green-500">
-                    {totalIncome.toFixed(2)}
-                  </strong>{" "}
-                </p>
-                <p className="text-sm text-gray-400 ">
-                  Balance: Kshs.
-                  <strong className="text-green-500">
-                    {(totalIncome - allTotal).toFixed(2)}
-                  </strong>{" "}
-                </p>
-                <p className="text-sm text-gray-400 ">
-                  Total Expenditure: Kshs.
-                  <strong className="text-red-500">
-                    {allTotal.toFixed(2)}
-                  </strong>
-                </p>
-              </div>
-              <IncomeInput
-                handleCloseAddIncome={handleCloseAddIncome}
-                onClick={handleIncome}
-                addIncome={addIncome}
-                value={income}
-                onChange={(e) => setIncome(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="flex justify-center items-center">
-            <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-300 flex flex-col w-[80%]  ">
-              <p className="font-medium font-gray-950 mb-3">Expenses Summary</p>
-              <div className="  font-light flex flex-col gap-3">
-                <p className="text-sm text-gray-400">
-                  Today: Kshs.
-                  <strong className="text-red-400">
-                    {todayTotal.toFixed(2)}
-                  </strong>
-                </p>
-                <p className="text-sm text-gray-400">
-                  Weekly: Kshs.{" "}
-                  <strong className="text-red-400">
-                    {weektotal.toFixed(2)}
-                  </strong>{" "}
-                </p>
-                <p className="text-sm text-gray-400">
-                  Monthly:{" "}
-                  <strong className="text-red-400">
-                    {monthTotal.toFixed(2)}
-                  </strong>{" "}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/*====================
+                    <div className="flex justify-center items-center">
+                        <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-200 flex flex-col w-[80%]  ">
+                            <p className="text-gray-900 text-xl font-medium">
+                                Welcome back {User.name}!
+                            </p>
+                            <div className="flex flex-col gap-4 md:gap-2 mt-4 md:mt-2">
+                                <p className="text-sm text-gray-400 ">
+                                    Total Income: Kshs.
+                                    <strong className="text-green-500">
+                                        {totalIncome.toFixed(2)}
+                                    </strong>{" "}
+                                </p>
+                                <p className="text-sm text-gray-400 ">
+                                    Balance: Kshs.
+                                    <strong className="text-green-500">
+                                        {(totalIncome - allTotal).toFixed(2)}
+                                    </strong>{" "}
+                                </p>
+                                <p className="text-sm text-gray-400 ">
+                                    Total Expenditure: Kshs.
+                                    <strong className="text-red-500">
+                                        {allTotal.toFixed(2)}
+                                    </strong>
+                                </p>
+                            </div>
+                            <IncomeInput
+                                handleCloseAddIncome={handleCloseAddIncome}
+                                onClick={handleIncome}
+                                addIncome={addIncome}
+                                value={income}
+                                onChange={e => setIncome(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <ExpenseSummary Transactions={Transactions} />
+                </div>
+                {/*====================
           Transactions  section
           =======================*/}
-        <div className="w-[80%] max-w-150 m-auto flex flex-col mt-30 gap-1  ">
-          <p className="font-medium text-lg font-sans">Your Transactions</p>
-          <p className="font-medium text-sm font-sans">Expenses</p>
-
-          {Transactions.map((entry) => {
-            const date = new Date(entry.date);
-            return (
-              <div
-                onClick={() => deleteTransaction(entry.id)}
-                key={entry.id}
-                className=" flex bg-gray-100 p-2 rounded-lg justify-between items-center"
-              >
-                <div>
-                  <p>{entry.name}</p>
-                  <p className="text-red-500 font-light">
-                    {" "}
-                    -{Number(entry.price).toFixed(2)}
-                  </p>
-                </div>
-                <div className=" text-sm">
-                  <p>{date.toLocaleDateString()}</p>
-                  <p>{date.toLocaleTimeString()}</p>
-                </div>
-              </div>
-            );
-          })}
-          <p className="font-medium text-sm font-sans">Incomes</p>
-          <div>
-            {incomeList.map((entry) => {
-              let date = new Date(entry.date);
-              return (
-                <div
-                  className="m-1 flex bg-gray-100 p-2 rounded-lg justify-between items-center"
-                  key={entry.id}
-                >
-                  <p className="text-3xl text-green-500 font-black">
-                    +{entry.amount}
-                  </p>
-                  <div className="text-sm">
-                    <p>{date.toLocaleDateString()}</p>
-                    <p>{date.toLocaleTimeString()}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                <TransactionsComponent
+                    incomeList={incomeList}
+                    Transactions={Transactions}
+                    setTransactions={setTransactions}
+                />
+            </main>
         </div>
-      </main>
-    </div>
-  );
+    );
 }
