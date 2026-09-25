@@ -39,7 +39,7 @@ export default function Dashboard() {
 
   return (
     <div className="h-dvh w-dvw">
-      <Header User={User} totalIncome={totalIncome} />
+      <Header User={User} totalIncome={totalIncome} Transactions={Transactions} setTransactions={setTransactions} />
       {/*==================== //Main section //======================= */}
       <main className="flex flex-col">
         {/*==================== //sidebar section // ======================= */}

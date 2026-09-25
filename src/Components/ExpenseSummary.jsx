@@ -5,7 +5,8 @@ export default function ExpenseSummary({ Transactions }) {
 
     const todayExpenses = Transactions.filter(transaction => {
         const expenseDate = new Date(transaction.date);
-        const today = new Date(Date.now());
+        const date =  Date.now
+        const today = new Date(date);
 
         return expenseDate.toLocaleDateString() === today.toLocaleDateString();
     });
