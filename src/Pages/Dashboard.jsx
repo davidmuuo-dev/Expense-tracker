@@ -11,6 +11,9 @@ export default function Dashboard() {
 
   const addIncome = useRef(null);
 
+    const [userIncome, setUserIncome] = useState(
+    JSON.parse(localStorage.getItem("Income")) || [],
+  );
   const User = JSON.parse(localStorage.getItem("User"));
   const [Transactions, setTransactions] = useState(
     JSON.parse(localStorage.getItem("Expenses")) || [],
@@ -30,7 +33,7 @@ export default function Dashboard() {
   const allTotal = totalExpenditure.reduce((a, b) => a + b, 0);
 
   const incomeList = JSON.parse(localStorage.getItem("Income")) || [];
-  const totalIncome = incomeList.reduce((a, b) => {
+  const totalIncome = userIncome.reduce((a, b) => {
     return a + b.amount;
   }, 0);
 
@@ -60,6 +63,8 @@ export default function Dashboard() {
             totalIncome={totalIncome}
             User={User}
             allTotal={allTotal}
+            setUserIncome={setUserIncome}
+            userIncome={userIncome}
           />
           <ExpenseSummary Transactions={Transactions} />
         </div>
