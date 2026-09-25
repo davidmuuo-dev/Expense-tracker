@@ -40,7 +40,7 @@ export default function AddExpenses({ addTransactionForm , setTransactions}){
   }
 
     return ( <div className="h-full p-2 mt-5 shadow-xl rounded-lg shadow-gray-300 flex flex-col w-[80%] justify-center items-center  gap-3 ">
-              <p>Add a transaction</p>
+              <p>Add an expense</p>
               <p
                 ref={warning}
                 className="text-red-500 font-medium text-sm hidden"
@@ -64,7 +64,7 @@ export default function AddExpenses({ addTransactionForm , setTransactions}){
                   onClick={handleCloseAddTransactionForm}
                   className="bg-sky-300 w-[40%]  "
                 >
-                  Cancel
+                  Close
                 </ButtonSecondary>
                 <ButtonPrimary onClick={addExpense} className="w-[40%]">
                   Add

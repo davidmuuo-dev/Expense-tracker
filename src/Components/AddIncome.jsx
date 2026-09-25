@@ -83,7 +83,7 @@ export default function AddIncome({
                 onClick={handleCloseAddIncome}
                 className="outline-2 text-gray-950 outline-sky-500 w-[30%] py-2 rounded-lg  "
               >
-                Clear
+                Close
               </button>
               <button
                 onClick={handleIncome}
