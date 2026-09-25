@@ -5,17 +5,15 @@ export default function ExpenseSummary({ Transactions }) {
 
   const todayExpenses = Transactions.filter((transaction) => {
     const expenseDate = new Date(transaction.date);
-    const date = Date.now;
-    const today = new Date(date);
+    const today = new Date();
 
     return expenseDate.toLocaleDateString() === today.toLocaleDateString();
   });
 
-  const prices = [];
-  todayExpenses.map((entry) => {
-    return prices.push(Number(entry.price));
-  });
-  const todayTotal = prices.reduce((a, b) => a + b, 0);
+  const todayTotal = todayExpenses.reduce(
+    (total, entry) => total + Number(entry.price),
+    0,
+  );
 
   //====================================
   //CALCULATING WEEKLY EXPENSE
