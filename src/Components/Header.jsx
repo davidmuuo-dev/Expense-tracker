@@ -69,7 +69,7 @@ export default function Header({
           </button>
           <div
             ref={searchContainer}
-            className="absolute  h-100 overflow-scroll hidden z-10 top-full left-0 w-full bg-white border border-gray-300 rounded-lg shadow-lg"
+            className="absolute h-fit  max-h-100 overflow-scroll hidden z-10 top-full left-0 w-full bg-white border border-gray-300 rounded-lg shadow-lg"
           >
             {searchedItems.length === 0 && "No items found"}
             {searchedItems.map((entry) => {
@@ -107,25 +107,27 @@ export default function Header({
           <IoMenuSharp className=" text-2xl" />
         </button>
       </div>
-      <div
-        ref={dropMenu}
-        className=" absolute z-10 top-12 md:static right-0 md:grow md:flex p-2 hidden border-2 border-black/30 rounded-md justify-self-end w-[50%] md:gap-4 shadow-2xl md:shadow-none md:border-0 shadow-black/50 items-center md:items-start "
-      >
-        <div className="bg-gray-50 p-2 h-fit rounded-sm flex gap-2 items-center">
-          <FaRegUserCircle className="text-3xl fill-gray-400" />
-          {User.name}
-        </div>
-        <div className="bg-gray-100 text-xl font-medium mt-2 p-2 rounded-sm flex gap-2 items-center">
-          <PiMoneyWavyDuotone />
-          Kshs. <strong className="text-green-500"> {totalIncome}</strong>
-        </div>
-
+      <div className="md:flex md:gap-4 md:items-center">
         <div
-          onClick={logout}
-          className="bg-gray-100 p-2 mt-2 rounded-sm flex gap-2 items-center text-red-500"
+          ref={dropMenu}
+          className=" absolute z-10 top-12 md:static right-0 md:grow md:flex p-2 hidden border-2 border-black/30 rounded-md justify-self-end w-[50%] md:gap-4 shadow-2xl md:shadow-none md:border-0 shadow-black/50 items-center md:items-start "
         >
-          <IoIosLogOut className="text-3xl fill-red-500" />
-          Logout
+          <div className="bg-gray-50 p-2 h-fit rounded-sm flex gap-2 items-center">
+            <FaRegUserCircle className=" fill-gray-400" />
+            {User.name}
+          </div>
+          <div className="bg-gray-50 p-2 h-fit rounded-sm flex gap-2 items-center">
+            <PiMoneyWavyDuotone />
+            Kshs. <strong className="text-green-500"> {totalIncome}</strong>
+          </div>
+
+          <div
+            onClick={logout}
+           className="bg-gray-50 p-2 h-fit rounded-sm flex gap-2 items-center text-red-500"
+          >
+            <IoIosLogOut className=" fill-red-500" />
+            Logout
+          </div>
         </div>
       </div>
     </header>

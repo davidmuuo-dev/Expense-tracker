@@ -1,10 +1,16 @@
-import IncomeInput from "./IncomeInput";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
-export default function AddIncome({ userIncome, setUserIncome,totalIncome, User, allTotal }) {
+export default function AddIncome({
+  userIncome,
+  setUserIncome,
+  totalIncome,
+  addIncome,
+  User,
+  allTotal,
+}) {
   const [income, setIncome] = useState("");
 
-  const addIncome = useRef(null);
+ 
   function handleCloseAddIncome() {
     setIncome("");
     addIncome.current.classList.add("hidden");
@@ -18,6 +24,8 @@ export default function AddIncome({ userIncome, setUserIncome,totalIncome, User,
       this.id = crypto.randomUUID();
     }
   }
+
+  
 
   function handleIncome() {
     if (income !== "") {
@@ -56,13 +64,36 @@ export default function AddIncome({ userIncome, setUserIncome,totalIncome, User,
             <strong className="text-red-500">{allTotal.toFixed(2)}</strong>
           </p>
         </div>
-        <IncomeInput
-          handleCloseAddIncome={handleCloseAddIncome}
-          onClick={handleIncome}
-          addIncome={addIncome}
-          value={income}
-          onChange={(e) => setIncome(e.target.value)}
-        />
+
+        <div
+          ref={addIncome}
+          className="bg-gray-300 w-full mt-3 rounded-lg md:block hidden"
+        >
+          <p>Add Income</p>
+          <div className="bg-gray-100 rounded-lg p-2 gap-5 flex flex-col items-center ">
+            <input
+              value={income}
+              onChange={(e) => setIncome(e.target.value)}
+              type="number"
+              placeholder="Add new Income"
+              className="outline-0 w-full py-2 px-1.5 border border-gray-600 rounded-lg"
+            />
+            <div className="w-full flex justify-between">
+              <button
+                onClick={handleCloseAddIncome}
+                className="outline-2 text-gray-950 outline-sky-500 w-[30%] py-2 rounded-lg  "
+              >
+                Clear
+              </button>
+              <button
+                onClick={handleIncome}
+                className="bg-sky-500 w-[30%] py-2 rounded-lg  "
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
